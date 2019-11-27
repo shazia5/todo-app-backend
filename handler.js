@@ -1,26 +1,38 @@
-const express = require("express");
+const express=require("express");
 const serverlessHttp = require("serverless-http");
 const cors = require("cors");
 const bodyparser= require("body-parser");
+const mysql = require("mysql");
+
 
 const app = express();
-
+app.use(cors());
 // allows Express to parse JSON ddata that is sent on the body of any requests
 app.use(bodyparser.json())
-app.use(cors());
+
+const connection = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: "mytodolist"
+});
 
 
 app.get("/tasks", function (request, response) {
-  // Do the logic for getting all the tasks from the DB
-  response.status(200).send({
-    tasks: [
-      {id: 1, text:"buy the bread", completed: false, dateDue:"2019-11-29", dateDone:""},
-      {id: 2, text:"pick up prescription", completed: false, dateDue:"2019-11-28", dateDone:""},
-      {id: 3, text:"buy some milk", completed: true, dateDue:"2019-11-16", dateDone:"2019-11-20"}
-    ]
+  connection.query("SELECT * FROM task", function(err, data) {
+    if (err) {
+      console.log("Error fetching tasks", err);
+      response.status(500).json({
+        error: err
+      });
+    } else {
+      response.json({
+        tasks: data
+      });
+    }
   });
 });
-
+    
 app.post("/tasks", function (request, response) {
   // Do the logic for saving the new task in the DB
   const task = request.body;
