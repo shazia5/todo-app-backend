@@ -1,3 +1,5 @@
+org: shazia5
+app: mytodolist
 
 
 service: todo-aap-backend
