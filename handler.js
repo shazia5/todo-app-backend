@@ -80,18 +80,18 @@ app.post("/tasks", function (request, response) {
 });
 
 
-app.put("/tasks/:taskId", function (request, response) {
+app.put("/tasks/:id", function (request, response) {
 //update task
-const id = request.params.id;
-const updatedTask = request.body.text;
-connection.query("UPDATE task SET completed = ? WHERE id = ?", [0, id], function (err, data) {
+const id= request.params.id;
+const updatedTask = request.body.completed;
+connection.query('UPDATE task SET completed = ? WHERE id = ?', [updatedTask, id], function (err, data) {
   if (err) {
     console.log("Error updating task with id " + id, err);
     response.status(500).json({
       error: err
     });
   } else {
-    console.log(updatedTask.insertId)
+    console.log(updatedTask.insertedId)
     response.status(200).send({
       tasks: data
     })
